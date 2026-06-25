@@ -1,0 +1,24 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alfa-payroll"
+version = "1.0.0"
+description = "ALFACRM football coach payroll calculator"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31.0",
+    "openpyxl>=3.1.0",
+    "python-dotenv>=1.0.0",
+    "fastapi>=0.110.0",
+    "uvicorn[standard]>=0.27.0",
+    "pydantic>=2.0.0",
+]
+
+[project.scripts]
+alfa-payroll = "payroll.__main__:main"
+
+[tool.setuptools.packages.find]
+include = ["payroll*"]

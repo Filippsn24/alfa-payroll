@@ -1,0 +1,46 @@
+name: Calculate Payroll
+
+on:
+  workflow_dispatch:
+    inputs:
+      month:
+        description: "Период YYYY-MM"
+        required: true
+        default: "2026-05"
+      include_tatyana:
+        description: "Свод для Татьяны"
+        type: boolean
+        default: true
+
+jobs:
+  calculate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Calculate payroll
+        env:
+          ALFACRM_BASE_URL: ${{ secrets.ALFACRM_BASE_URL }}
+          ALFACRM_BRANCH_ID: ${{ secrets.ALFACRM_BRANCH_ID }}
+          ALFACRM_EMAIL: ${{ secrets.ALFACRM_EMAIL }}
+          ALFACRM_API_KEY: ${{ secrets.ALFACRM_API_KEY }}
+        run: |
+          FLAGS="--json"
+          if [ "${{ inputs.include_tatyana }}" = "true" ]; then
+            FLAGS="$FLAGS --tatyana"
+          fi
+          python -m payroll --month "${{ inputs.month }}" $FLAGS
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: payroll-${{ inputs.month }}
+          path: output/
+          retention-days: 90
