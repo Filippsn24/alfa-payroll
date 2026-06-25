@@ -31,11 +31,11 @@ class Settings:
                 "Set ALFACRM_EMAIL and ALFACRM_API_KEY in .env or environment"
             )
         return cls(
-            base_url=os.environ.get("ALFACRM_BASE_URL", "https://meteor.s20.online").rstrip("/"),
-            branch_id=int(os.environ.get("ALFACRM_BRANCH_ID", "1")),
+            base_url=(os.environ.get("ALFACRM_BASE_URL") or "https://meteor.s20.online").rstrip("/"),
+            branch_id=int(os.environ.get("ALFACRM_BRANCH_ID") or "1"),
             email=email,
             api_key=api_key,
-            api_secret=os.environ.get("PAYROLL_API_KEY"),
+            api_secret=os.environ.get("PAYROLL_API_KEY") or None,
         )
 
 

@@ -22,24 +22,44 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Check required secrets
+        env:
+          ALFACRM_EMAIL: ${{ secrets.ALFACRM_EMAIL }}
+          ALFACRM_API_KEY: ${{ secrets.ALFACRM_API_KEY }}
+        run: |
+          missing=0
+          if [ -z "$ALFACRM_EMAIL" ]; then
+            echo "::error::Не задан секрет ALFACRM_EMAIL. Добавьте в Settings → Secrets and variables → Actions"
+            missing=1
+          fi
+          if [ -z "$ALFACRM_API_KEY" ]; then
+            echo "::error::Не задан секрет ALFACRM_API_KEY. Добавьте в Settings → Secrets and variables → Actions"
+            missing=1
+          fi
+          if [ "$missing" -eq 1 ]; then
+            exit 1
+          fi
+          echo "Секреты ALFACRM найдены."
+
       - name: Install dependencies
         run: pip install -r requirements.txt
 
       - name: Calculate payroll
         env:
-          ALFACRM_BASE_URL: ${{ secrets.ALFACRM_BASE_URL }}
-          ALFACRM_BRANCH_ID: ${{ secrets.ALFACRM_BRANCH_ID }}
           ALFACRM_EMAIL: ${{ secrets.ALFACRM_EMAIL }}
           ALFACRM_API_KEY: ${{ secrets.ALFACRM_API_KEY }}
         run: |
+          set -e
           FLAGS="--json"
           if [ "${{ inputs.include_tatyana }}" = "true" ]; then
             FLAGS="$FLAGS --tatyana"
           fi
           python -m payroll --month "${{ inputs.month }}" $FLAGS
+          ls -la output/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
+        if: success()
         with:
           name: payroll-${{ inputs.month }}
           path: output/
