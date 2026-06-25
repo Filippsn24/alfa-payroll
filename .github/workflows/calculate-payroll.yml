@@ -29,17 +29,17 @@ jobs:
         run: |
           missing=0
           if [ -z "$ALFACRM_EMAIL" ]; then
-            echo "::error::Не задан секрет ALFACRM_EMAIL. Добавьте в Settings → Secrets and variables → Actions"
+            echo "::error title=ALFACRM_EMAIL missing::Секрет ALFACRM_EMAIL не найден. GitHub → Settings → Secrets and variables → Actions → New repository secret → Name: ALFACRM_EMAIL → Value: ваш email от ALFACRM"
             missing=1
           fi
           if [ -z "$ALFACRM_API_KEY" ]; then
-            echo "::error::Не задан секрет ALFACRM_API_KEY. Добавьте в Settings → Secrets and variables → Actions"
+            echo "::error title=ALFACRM_API_KEY missing::Секрет ALFACRM_API_KEY не найден. GitHub → Settings → Secrets and variables → Actions → New repository secret → Name: ALFACRM_API_KEY → Value: ваш API-ключ ALFACRM"
             missing=1
           fi
           if [ "$missing" -eq 1 ]; then
             exit 1
           fi
-          echo "Секреты ALFACRM найдены."
+          echo "Секреты ALFACRM_EMAIL и ALFACRM_API_KEY найдены."
 
       - name: Install dependencies
         run: pip install -r requirements.txt
